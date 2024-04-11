@@ -7,7 +7,7 @@ from nonebot import get_plugin_config
 class Config(BaseModel):
     github_proxy: Optional[str] = "https://mirror.ghproxy.com"
     sr_wiki_url: Optional[str] = (
-        "https://raw.githubusercontent.com/Mar-7th/StarRailRes/master"
+        "https://raw.githubusercontent.com/Joseandluue/StarRailRes/master"
     )
 
 
