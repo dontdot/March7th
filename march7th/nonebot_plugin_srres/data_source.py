@@ -235,7 +235,7 @@ class StarRailRes:
         if id == "8000":
             id = "8002"
         if id in self.ResIndex["characters"]:
-            overview = self.ResIndex["characters"][id].guide_overview
+            overview = self.ResIndex["characters"][id].guide_overview[0]
             if overview:
                 if isinstance(overview, list):
                     overview = random.choice(overview)
