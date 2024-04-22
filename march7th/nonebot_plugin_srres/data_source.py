@@ -257,60 +257,6 @@ class StarRailRes:
                 return self.proxy_url(f"{plugin_config.sr_wiki_url}/{overview}")
         return None
 
-    async def get_character_material(self, name: str) -> Optional[Path]:
-        if name not in self.NicknameRev:
-            return None
-        id = self.NicknameRev[name]
-        if id == "8000":
-            id = "8002"
-        if id in self.ResIndex["characters"]:
-            material = self.ResIndex["characters"][id].guide_material
-            if material:
-                if isinstance(material, list):
-                    material = random.choice(material)
-                if await self.cache(material):
-                    return plugin_data_dir / material
-        return None
-
-    def get_character_material_url(self, name: str) -> Optional[str]:
-        if name not in self.NicknameRev:
-            return None
-        id = self.NicknameRev[name]
-        if id == "8000":
-            id = "8002"
-        if id in self.ResIndex["characters"]:
-            material = self.ResIndex["characters"][id].guide_material
-            if material:
-                if isinstance(material, list):
-                    material = random.choice(material)
-                return self.proxy_url(f"{plugin_config.sr_wiki_url}/{material}")
-        return None
-
-    async def get_light_cone_overview(self, name: str) -> Optional[Path]:
-        if name not in self.NicknameRev:
-            return None
-        id = self.NicknameRev[name]
-        if id in self.ResIndex["light_cones"]:
-            overview = self.ResIndex["light_cones"][id].guide_overview
-            if overview:
-                if isinstance(overview, list):
-                    overview = random.choice(overview)
-                if await self.cache(overview):
-                    return plugin_data_dir / overview
-        return None
-
-    def get_light_cone_overview_url(self, name: str) -> Optional[str]:
-        if name not in self.NicknameRev:
-            return None
-        id = self.NicknameRev[name]
-        if id in self.ResIndex["light_cones"]:
-            overview = self.ResIndex["light_cones"][id].guide_overview
-            if overview:
-                if isinstance(overview, list):
-                    overview = random.choice(overview)
-                return self.proxy_url(f"{plugin_config.sr_wiki_url}/{overview}")
-        return None
-
     async def get_relic_set_overview(self, name: str) -> Optional[Path]:
         if name not in self.NicknameRev:
             return None
