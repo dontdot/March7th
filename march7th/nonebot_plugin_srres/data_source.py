@@ -26,7 +26,7 @@ ResFiles = {
 }
 
 NicknameFile = "othername.json"
-VersionFile = "fileHash.json"
+VersionFile = "filesHash.json"
 
 class ResIndexType(TypedDict):
     characters: CharacterIndex
@@ -133,7 +133,7 @@ class StarRailRes:
                 data = json.load(f)
             if not model:
                 return data
-            if name == 'file':
+            if name == 'files':
                 return type_validate_python(ResIndexType.__annotations__['characters'], data)
             else:
                 return type_validate_python(ResIndexType.__annotations__[name], data)
@@ -141,7 +141,7 @@ class StarRailRes:
 
     def reload(self) -> None:
         for name in ResFiles:
-            if name in {"file"}:
+            if name in {"files"}:
                 self.ResIndex[name] = self.load_index_file(name)
                 continue
             
