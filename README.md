@@ -12,7 +12,11 @@
 
 ## 说明
 
-该分支只保留角色攻略功能，资源库改为直接从[`Nwflower/star-rail-atlas`](https://github.com/Nwflower/star-rail-atlas) 获取索引和图片资源
+该分支只保留角色攻略功能
+
+图片资源直取[`Nwflower/star-rail-atlas`](https://github.com/Nwflower/star-rail-atlas) 
+
+索引文件取[`Joseandluue/star-rail-atlas`](https://github.com/Joseandluue/star-rail-atlas)
 
 ## 使用
 
