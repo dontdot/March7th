@@ -20,8 +20,8 @@ font_dir = plugin_data_dir / "font"
 
 
 ResFiles = {
-    "file",
-    "fileHash",
+    "files",
+    "filesHash",
     "othername",
 }
 
