@@ -16,7 +16,7 @@
 
 图片资源直取[`Nwflower/star-rail-atlas`](https://github.com/Nwflower/star-rail-atlas) 
 
-索引文件取[`Joseandluue/star-rail-atlas`](https://github.com/Joseandluue/star-rail-atlas)
+索引文件取[`Joseandluue/star-rail-atlas`](https://github.com/Joseandluue/star-rail-atlas/tree/index)
 
 ## 使用
 
