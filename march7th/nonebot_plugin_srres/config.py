@@ -9,6 +9,6 @@ class Config(BaseModel):
     sr_wiki_url: Optional[str] = (
         "https://raw.githubusercontent.com/Joseandluue/StarRailRes/master"
     )
-
+    sr_guide_url: Optional[str] = "https://raw.githubusercontent.com/Nwflower/star-rail-atlas/master"
 
 plugin_config = get_plugin_config(Config)

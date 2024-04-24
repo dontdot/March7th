@@ -78,6 +78,22 @@ class StarRailRes:
                 with open(plugin_data_dir / file, "wb") as f:
                     f.write(data)
         return status
+    
+    async def img_cache(self, file: str):
+        status = True
+        if not (plugin_data_dir / file).exists():
+            (plugin_data_dir / file).parent.mkdir(parents=True, exist_ok=True)
+            logger.debug(f"Downloading {file}...")
+            data = await self.download(
+                self.proxy_url(f"{plugin_config.sr_guide_url}/{file}")
+            )
+            if not data:
+                logger.error(f"Failed to download {file}.")
+                status = False
+            else:
+                with open(plugin_data_dir / file, "wb") as f:
+                    f.write(data)
+        return status
 
     async def get_character_overview(self, name: str) -> Optional[Path]:
         if name not in self.NicknameRev:
@@ -90,7 +106,7 @@ class StarRailRes:
             if overview:
                 if isinstance(overview, list):
                     overview = random.choice(overview)
-                if await self.cache(overview):
+                if await self.img_cache(overview):
                     return plugin_data_dir / overview
         return None
 
