@@ -1,5 +1,4 @@
 from typing import List
-
 from nonebot.matcher import Matcher
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters import Event, Message
@@ -12,11 +11,9 @@ require("nonebot_plugin_srres")
 from nonebot_plugin_saa import Image, MessageFactory
 
 try:
-    from march7th.nonebot_plugin_srres import srres
-    from march7th.nonebot_plugin_srres.model.achievements import AchievementType
+    from ..nonebot_plugin_srres import srres
 except ModuleNotFoundError:
     from nonebot_plugin_srres import srres
-    from nonebot_plugin_srres.model.achievements import AchievementType
 
 __plugin_meta__ = PluginMetadata(
     name="StarRailWiki",
@@ -65,11 +62,6 @@ async def _(event: Event, matcher: Matcher, regex_dict: dict = RegexDict()):
     pic_content = None
     if wiki_type_1 in {"all", "character"}:
         pic_content = await srres.get_character_overview(wiki_name)
-    if (
-        not pic_content
-        and wiki_type_1 in {"all", "character"}
-    ):
-        pic_content = await srres.get_character_material(wiki_name)
     if pic_content:
         matcher.stop_propagation()
         msg_builder = MessageFactory([Image(pic_content)])

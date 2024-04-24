@@ -7,16 +7,15 @@ from typing import Any, Dict, Optional, TypedDict
 import httpx
 from nonebot.log import logger
 from nonebot.compat import type_validate_python
-from nonebot_plugin_datastore import get_plugin_data
 
 from .config import plugin_config
 from .model.characters import (
     CharacterIndex
 )
 
-plugin_data_dir: Path = get_plugin_data().data_dir
-index_dir = plugin_data_dir / "index"
-font_dir = plugin_data_dir / "font"
+plugin_data_dir = Path(__name__).parent.absolute() # NoneBot2 机器人根目录
+data_path = plugin_data_dir / "data" / "nonebot_plugin_march7th" # NoneBot2 机器人插件数据目录
+index_dir = data_path / "index"
 
 
 ResFiles = {
@@ -65,8 +64,8 @@ class StarRailRes:
 
     async def cache(self, file: str):
         status = True
-        if not (plugin_data_dir / file).exists():
-            (plugin_data_dir / file).parent.mkdir(parents=True, exist_ok=True)
+        if not (data_path / file).exists():
+            (data_path / file).parent.mkdir(parents=True, exist_ok=True)
             logger.debug(f"Downloading {file}...")
             data = await self.download(
                 self.proxy_url(f"{plugin_config.sr_wiki_url}/{file}")
@@ -75,14 +74,14 @@ class StarRailRes:
                 logger.error(f"Failed to download {file}.")
                 status = False
             else:
-                with open(plugin_data_dir / file, "wb") as f:
+                with open(data_path / file, "wb") as f:
                     f.write(data)
         return status
     
     async def img_cache(self, file: str):
         status = True
-        if not (plugin_data_dir / file).exists():
-            (plugin_data_dir / file).parent.mkdir(parents=True, exist_ok=True)
+        if not (data_path / file).exists():
+            (data_path / file).parent.mkdir(parents=True, exist_ok=True)
             logger.debug(f"Downloading {file}...")
             data = await self.download(
                 self.proxy_url(f"{plugin_config.sr_guide_url}/{file}")
@@ -91,7 +90,7 @@ class StarRailRes:
                 logger.error(f"Failed to download {file}.")
                 status = False
             else:
-                with open(plugin_data_dir / file, "wb") as f:
+                with open(data_path / file, "wb") as f:
                     f.write(data)
         return status
 
@@ -102,12 +101,12 @@ class StarRailRes:
         if id == "8000":
             id = "8002"
         if id in self.ResIndex["characters"]:
-            overview = self.ResIndex["characters"][id].path
+            overview = self.ResIndex["characters"][id].path[1:]
             if overview:
                 if isinstance(overview, list):
                     overview = random.choice(overview)
                 if await self.img_cache(overview):
-                    return plugin_data_dir / overview
+                    return data_path / overview
         return None
 
     def get_character_overview_url(self, name: str) -> Optional[str]:
@@ -125,7 +124,7 @@ class StarRailRes:
         return None
 
     def get_data_folder(self) -> Path:
-        return plugin_data_dir
+        return data_path
 
     def load_index_file(self, name: str, model=True) -> Dict[str, Any]:
         if name in ResFiles and (index_dir / f"{name}.json").exists():
@@ -134,7 +133,7 @@ class StarRailRes:
             if not model:
                 return data
             if name == 'files':
-                return type_validate_python(ResIndexType.__annotations__['characters'], data)
+                return type_validate_python(ResIndexType.__annotations__['characters'], data['guide_overview'])
             else:
                 return type_validate_python(ResIndexType.__annotations__[name], data)
         return {}
@@ -142,7 +141,8 @@ class StarRailRes:
     def reload(self) -> None:
         for name in ResFiles:
             if name in {"files"}:
-                self.ResIndex[name] = self.load_index_file(name)
+                self.ResIndex['characters'] = self.load_index_file(name)
+                logger.debug(f'ResIndex:{self.ResIndex}')
                 continue
             
         self.Nickname = self.load_index_file("othername", model=False)
@@ -166,18 +166,18 @@ class StarRailRes:
         if not data:
             logger.error(f"文件 {VersionFile} 下载失败")
             return False
-        if not plugin_data_dir.exists() or not (plugin_data_dir / VersionFile).exists():
-            plugin_data_dir.mkdir(parents=True, exist_ok=True)
+        if not data_path.exists() or not (data_path / VersionFile).exists():
+            data_path.mkdir(parents=True, exist_ok=True)
             # 版本文件不存在，更新索引
             update_index = True
         else:
-            with open(plugin_data_dir / VersionFile, encoding="utf-8") as f:
+            with open(data_path / VersionFile, encoding="utf-8") as f:
                 current_version = json.load(f)
             if current_version["version"] != json.loads(data)["version"]:
                 # 版本不一致，更新索引
                 update_index = True
         # 更新版本文件
-        with open(plugin_data_dir / VersionFile, "w", encoding="utf-8") as f:
+        with open(data_path / VersionFile, "w", encoding="utf-8") as f:
             f.write(data.decode("utf-8"))
         # 更新索引
         index_dir.mkdir(parents=True, exist_ok=True)
