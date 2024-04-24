@@ -10,27 +10,8 @@ from nonebot.compat import type_validate_python
 from nonebot_plugin_datastore import get_plugin_data
 
 from .config import plugin_config
-from .model.paths import PathIndex
-from .model.elements import ElementIndex
-from .model.properties import PropertyIndex
-from .model.achievements import AchievementIndex
-from .model.light_cones import (
-    LightConeIndex,
-    LightConeRankIndex,
-    LightConePromotionIndex,
-)
-from .model.relics import (
-    RelicIndex,
-    RelicSetIndex,
-    RelicSubAffixIndex,
-    RelicMainAffixIndex,
-)
 from .model.characters import (
-    CharacterIndex,
-    CharacterRankIndex,
-    CharacterSkillIndex,
-    CharacterPromotionIndex,
-    CharacterSkillTreeIndex,
+    CharacterIndex
 )
 
 plugin_data_dir: Path = get_plugin_data().data_dir
@@ -39,67 +20,21 @@ font_dir = plugin_data_dir / "font"
 
 
 ResFiles = {
-    "characters",
-    "character_ranks",
-    "character_skills",
-    "character_skill_trees",
-    "character_promotions",
-    "light_cones",
-    "light_cone_ranks",
-    "light_cone_promotions",
-    "relics",
-    "relic_sets",
-    "relic_main_affixes",
-    "relic_sub_affixes",
-    "paths",
-    "elements",
-    "properties",
-    "achievements",
-    "nickname",
+    "file",
+    "fileHash",
+    "othername",
 }
 
-NicknameFile = "nickname.json"
-VersionFile = "info.json"
-FontFile = "SDK_SC_Web.ttf"
-
+NicknameFile = "othername.json"
+VersionFile = "fileHash.json"
 
 class ResIndexType(TypedDict):
     characters: CharacterIndex
-    character_ranks: CharacterRankIndex
-    character_skills: CharacterSkillIndex
-    character_skill_trees: CharacterSkillTreeIndex
-    character_promotions: CharacterPromotionIndex
-    light_cones: LightConeIndex
-    light_cone_ranks: LightConeRankIndex
-    light_cone_promotions: LightConePromotionIndex
-    relics: RelicIndex
-    relic_sets: RelicSetIndex
-    relic_main_affixes: RelicMainAffixIndex
-    relic_sub_affixes: RelicSubAffixIndex
-    paths: PathIndex
-    elements: ElementIndex
-    properties: PropertyIndex
-    achievements: AchievementIndex
 
 
 class StarRailRes:
     ResIndex: ResIndexType = {
-        "characters": {},
-        "character_ranks": {},
-        "character_skills": {},
-        "character_skill_trees": {},
-        "character_promotions": {},
-        "light_cones": {},
-        "light_cone_ranks": {},
-        "light_cone_promotions": {},
-        "relics": {},
-        "relic_sets": {},
-        "relic_main_affixes": {},
-        "relic_sub_affixes": {},
-        "paths": {},
-        "elements": {},
-        "properties": {},
-        "achievements": {},
+        "characters": {}
     }
     Nickname: Dict[str, Any] = {}
     NicknameRev: Dict[str, Any] = {}
@@ -144,90 +79,6 @@ class StarRailRes:
                     f.write(data)
         return status
 
-    async def get_icon(
-        self, name: Optional[str] = None, id: Optional[str] = None
-    ) -> Optional[Path]:
-        if name:
-            chars = "「」！&"
-            for char in chars:
-                name = name.replace(char, "")
-            if name in self.NicknameRev:
-                return await self.get_icon(id=self.NicknameRev[name])
-        if id:
-            if id in self.ResIndex["characters"]:
-                return await self.get_icon_character(id)
-            if id in self.ResIndex["light_cones"]:
-                return await self.get_icon_light_cone(id)
-            if id in self.ResIndex["relic_sets"]:
-                return await self.get_icon_relic_set(id)
-        return None
-
-    async def get_icon_character(self, id: str) -> Optional[Path]:
-        if id == "8000":
-            id = "8002"
-        if id in self.ResIndex["characters"]:
-            icon_file = self.ResIndex["characters"][id].icon
-            if icon_file:
-                if await self.cache(icon_file):
-                    return plugin_data_dir / icon_file
-        return None
-
-    async def get_icon_light_cone(self, id: str) -> Optional[Path]:
-        if id in self.ResIndex["light_cones"]:
-            icon_file = self.ResIndex["light_cones"][id].icon
-            if icon_file:
-                if await self.cache(icon_file):
-                    return plugin_data_dir / icon_file
-        return None
-
-    async def get_icon_relic_set(self, id: str) -> Optional[Path]:
-        if id in self.ResIndex["relic_sets"]:
-            icon_file = self.ResIndex["relic_sets"][id].icon
-            if icon_file:
-                if await self.cache(icon_file):
-                    return plugin_data_dir / icon_file
-        return None
-
-    async def get_icon_path(self, id: str) -> Optional[Path]:
-        id = id.capitalize()
-        if id in self.ResIndex["paths"]:
-            icon_file = self.ResIndex["paths"][id].icon
-            if icon_file:
-                if await self.cache(icon_file):
-                    return plugin_data_dir / icon_file
-        return None
-
-    async def get_icon_element(self, id: str) -> Optional[Path]:
-        id = id.capitalize()
-        if id in self.ResIndex["elements"]:
-            icon_file = self.ResIndex["elements"][id].icon
-            if icon_file:
-                if await self.cache(icon_file):
-                    return plugin_data_dir / icon_file
-        return None
-
-    async def get_character_preview(self, name: str) -> Optional[Path]:
-        id = self.NicknameRev[name]
-        if id == "8000":
-            id = "8002"
-        if id in self.ResIndex["characters"]:
-            preview = self.ResIndex["characters"][name].preview
-            if preview:
-                if await self.cache(preview):
-                    return plugin_data_dir / preview
-        return None
-
-    async def get_character_portrait(self, name: str) -> Optional[Path]:
-        id = self.NicknameRev[name]
-        if id == "8000":
-            id = "8002"
-        if id in self.ResIndex["characters"]:
-            portrait = self.ResIndex["characters"][id].portrait
-            if portrait:
-                if await self.cache(portrait):
-                    return plugin_data_dir / portrait
-        return None
-
     async def get_character_overview(self, name: str) -> Optional[Path]:
         if name not in self.NicknameRev:
             return None
@@ -235,7 +86,7 @@ class StarRailRes:
         if id == "8000":
             id = "8002"
         if id in self.ResIndex["characters"]:
-            overview = self.ResIndex["characters"][id].guide_overview[0]
+            overview = self.ResIndex["characters"][id].path
             if overview:
                 if isinstance(overview, list):
                     overview = random.choice(overview)
@@ -257,34 +108,6 @@ class StarRailRes:
                 return self.proxy_url(f"{plugin_config.sr_wiki_url}/{overview}")
         return None
 
-    async def get_relic_set_overview(self, name: str) -> Optional[Path]:
-        if name not in self.NicknameRev:
-            return None
-        id = self.NicknameRev[name]
-        if id in self.ResIndex["relic_sets"]:
-            overview = self.ResIndex["relic_sets"][id].guide_overview
-            if overview:
-                if isinstance(overview, list):
-                    overview = random.choice(overview)
-                if await self.cache(overview):
-                    return plugin_data_dir / overview
-        return None
-
-    def get_relic_set_overview_url(self, name: str) -> Optional[str]:
-        if name not in self.NicknameRev:
-            return None
-        id = self.NicknameRev[name]
-        if id in self.ResIndex["relic_sets"]:
-            overview = self.ResIndex["relic_sets"][id].guide_overview
-            if overview:
-                if isinstance(overview, list):
-                    overview = random.choice(overview)
-                return self.proxy_url(f"{plugin_config.sr_wiki_url}/{overview}")
-        return None
-
-    def get_font(self) -> str:
-        return str(plugin_data_dir / "font" / FontFile)
-
     def get_data_folder(self) -> Path:
         return plugin_data_dir
 
@@ -294,16 +117,20 @@ class StarRailRes:
                 data = json.load(f)
             if not model:
                 return data
-            return type_validate_python(ResIndexType.__annotations__[name], data)
+            if name == 'file':
+                return type_validate_python(ResIndexType.__annotations__['characters'], data)
+            else:
+                return type_validate_python(ResIndexType.__annotations__[name], data)
         return {}
 
     def reload(self) -> None:
         for name in ResFiles:
-            if name in {"nickname"}:
+            if name in {"file"}:
+                self.ResIndex[name] = self.load_index_file(name)
                 continue
-            self.ResIndex[name] = self.load_index_file(name)
-        self.Nickname = self.load_index_file("nickname", model=False)
-        for type in {"characters", "light_cones", "relic_sets"}:
+            
+        self.Nickname = self.load_index_file("othername", model=False)
+        for type in {"characters"}:
             if type in self.Nickname.keys():
                 for k, v in dict(self.Nickname[type]).items():
                     for v_item in list(v):
@@ -347,7 +174,7 @@ class StarRailRes:
                 logger.debug(f"正在下载索引 {filename}...")
                 data = await self.download(
                     self.proxy_url(
-                        f"{plugin_config.sr_wiki_url}/index_min/cn/{filename}"
+                        f"{plugin_config.sr_wiki_url}/{filename}"
                     )
                 )
                 if not data:
@@ -359,21 +186,4 @@ class StarRailRes:
         logger.info("索引文件检查完毕")
         if status:
             self.reload()
-        # 检查字体文件是否完整
-        logger.info("正在检查字体文件是否完整")
-        if not font_dir.exists():
-            font_dir.mkdir(parents=True)
-        filename = FontFile
-        if not (font_dir / filename).exists():
-            logger.debug(f"正在下载字体文件 {filename}...")
-            data = await self.download(
-                self.proxy_url(f"{plugin_config.sr_wiki_url}/font/{filename}")
-            )
-            if not data:
-                logger.error(f"文件 {filename} 下载失败")
-                status = False
-            else:
-                with open(font_dir / filename, "wb") as f:
-                    f.write(data)
-        logger.info("字体文件检查完毕")
         return status
