@@ -3,6 +3,7 @@ import random
 import asyncio
 from pathlib import Path
 from typing import Any, Dict, Optional, TypedDict
+import hashlib
 
 import httpx
 from nonebot.log import logger
@@ -78,10 +79,19 @@ class StarRailRes:
                     f.write(data)
         return status
     
-    async def img_cache(self, file: str):
+    async def img_cache(self, file: str, img_hash: str):
         status = True
+        update = False
         if not (data_path / file).exists():
             (data_path / file).parent.mkdir(parents=True, exist_ok=True)
+            update = True
+        else:
+            with open(data_path / file, 'rb') as f:
+                    img_cachefile = f.read()
+            img_cacheHash = hashlib.md5(img_cachefile).hexdigest()
+            if not img_hash == img_cacheHash:
+                update = True
+        if update:
             logger.debug(f"Downloading {file}...")
             data = await self.download(
                 self.proxy_url(f"{plugin_config.sr_guide_url}/{file}")
@@ -102,10 +112,11 @@ class StarRailRes:
             id = "8002"
         if id in self.ResIndex["characters"]:
             overview = self.ResIndex["characters"][id].path[1:]
+            img_hash = self.ResIndex["characters"][id].hash
             if overview:
-                if isinstance(overview, list):
-                    overview = random.choice(overview)
-                if await self.img_cache(overview):
+                # if isinstance(overview, list):
+                #     overview = random.choice(overview)
+                if await self.img_cache(overview, img_hash):
                     return data_path / overview
         return None
 
