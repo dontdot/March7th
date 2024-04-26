@@ -53,7 +53,10 @@ class StarRailRes:
                 try:
                     resp = await client.get(url, timeout=10)
                     if resp.status_code == 302:
-                        url = resp.headers["location"]
+                        if resp.headers["location"][0] == '/':
+                            url = resp.headers["location"][1:]
+                        else:
+                            url = resp.headers["location"]
                         continue
                     resp.raise_for_status()
                     return resp.content
@@ -153,7 +156,6 @@ class StarRailRes:
         for name in ResFiles:
             if name in {"files"}:
                 self.ResIndex['characters'] = self.load_index_file(name)
-                logger.debug(f'ResIndex:{self.ResIndex}')
                 continue
             
         self.Nickname = self.load_index_file("othername", model=False)
