@@ -92,7 +92,7 @@ class StarRailRes:
             with open(data_path / file, 'rb') as f:
                     img_cachefile = f.read()
             img_cacheHash = hashlib.md5(img_cachefile).hexdigest()
-            if not img_hash == img_cacheHash:
+            if img_hash != img_cacheHash:
                 update = True
         if update:
             logger.debug(f"Downloading {file}...")
