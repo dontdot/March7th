@@ -111,8 +111,11 @@ class StarRailRes:
         if name not in self.NicknameRev:
             return None
         id = self.NicknameRev[name]
-        if id == "8000":
-            id = "8002"
+        logger.info(f'搜索到的id：{id}')
+        if id == "8002":
+            id = "8001"
+        elif id == '8004':
+            id = "8003"
         if id in self.ResIndex["characters"]:
             overview = self.ResIndex["characters"][id].path[1:]
             img_hash = self.ResIndex["characters"][id].hash
@@ -127,8 +130,10 @@ class StarRailRes:
         if name not in self.NicknameRev:
             return None
         id = self.NicknameRev[name]
-        if id == "8000":
-            id = "8002"
+        if id == "8002":
+            id = "8001"
+        elif id == '8004':
+            id = "8003"
         if id in self.ResIndex["characters"]:
             overview = self.ResIndex["characters"][id].guide_overview
             if overview:
